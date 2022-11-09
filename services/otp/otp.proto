@@ -1,0 +1,63 @@
+syntax = "proto3";
+package otp;
+
+option go_package = "services/otp";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service OtpService {
+  rpc CreateOtp(CreateOtpRequest) returns(Otp);
+  rpc GetOtp(OtpRequest) returns(Otp);
+  rpc DelOtp(OtpRequest) returns(google.protobuf.Empty);
+}
+
+enum DeviceType {
+  WEB = 0;
+  ANDROID = 1;
+  IOS = 2;
+  WINDOWS = 3;
+  LINUX = 4;
+  UNKNOWN = 5;
+}
+
+enum OtpType {
+  EMAIL = 0;
+  PHONE = 1;
+}
+
+
+enum IssuerType {
+  ADMIN = 0;
+  USER = 1;
+  BASE = 2;
+}
+
+message OtpRequest {
+  string token = 1;
+  optional OtpType otp = 2;
+  optional IssuerType issuer = 3;
+  optional DeviceType device_type = 4;
+  optional string session = 5;
+  optional uint64 user_id = 6;
+}
+
+message Otp {
+  uint64 id = 1;
+  string token = 2;
+  OtpType otp = 3;
+  IssuerType issuer = 4;
+  DeviceType device_type = 5;
+  string session = 6;
+  optional uint64 user_id = 7;
+  google.protobuf.Timestamp exp = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message CreateOtpRequest {
+  google.protobuf.Timestamp time_exp = 1;
+  OtpType otp = 2;
+  optional IssuerType issuer = 3;
+  optional DeviceType device_type = 4;
+  optional uint64 user_id = 6;
+}

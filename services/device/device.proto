@@ -1,0 +1,175 @@
+syntax = "proto3";
+package device;
+
+option go_package = "services/device";
+
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+
+service DeviceService {
+  rpc ListPagination(ListPaginationRequest) returns (ListPaginationResponse) {}
+
+  rpc CountDeviceByUserId(UserRequest) returns (IntResponse){}
+  rpc CountDeviceByNamespace(NamespaceRequest) returns (IntResponse){}
+
+  rpc GetDeviceId(DeviceRequest) returns (DeviceView){}
+  rpc GetDeviceDetailId(DeviceRequest) returns (DeviceDetailView){}
+  rpc GetDeviceIds(ListRequest) returns (ListResponse){}
+  rpc GetDeviceDetailIds(ListRequest) returns (ListDetailResponse){}
+
+  rpc GetDeviceAuth(AuthRequest) returns (DeviceDetailView){}
+
+  rpc CheckClientId(ClientIdRequest) returns(BoolResponse){}
+  rpc CheckDeviceKey(DeviceKeyRequest) returns(BoolResponse){}
+
+  rpc GetListDeviceIdWithUserId(UserRequest) returns(ListDeviceId){}
+
+  rpc CreateDevice(Device) returns (google.protobuf.Empty) {}
+  rpc UpdateDevice(Device) returns (google.protobuf.Empty) {}
+  rpc DeleteDevice(DeviceRequest) returns (google.protobuf.Empty) {}
+}
+
+message NamespaceRequest {
+  uint64 user_id = 1;
+  repeated uint64 list = 3;
+}
+
+message ListDeviceId {
+  repeated uint64 list = 1;
+}
+
+message ClientIdRequest {
+  string client_id = 1;
+}
+
+message DeviceKeyRequest {
+  string key = 1;
+  uint64 namespace_id = 2;
+  uint64 user_id = 3;
+}
+
+message BoolResponse {
+  bool ok = 1;
+}
+
+
+enum TypeCertificate {
+  TOKEN = 0;
+  GATEWAY = 1;
+  CERTIFICATE = 3;
+}
+
+message AuthRequest {
+    TypeCertificate type = 1;
+    optional string token = 2;
+    optional uint64 gateway_id = 3;
+    optional string username = 4;
+    optional string password = 5;
+    optional string client_id = 6;
+}
+
+message DeviceRequest {
+  uint64 id = 1;
+  uint64 user_id = 2;
+  optional bool bypass = 3;
+}
+
+
+message UserRequest {
+  uint64 user_id = 1;
+  optional bool bypass = 2;
+}
+
+message IntResponse {
+  int64 data = 1;
+}
+
+message ListRequest {
+  repeated uint64 id = 1;
+  uint64 user_id = 2;
+  optional bool bypass = 3;
+}
+
+message ListResponse {
+  repeated DeviceView data = 1;
+}
+
+message ListDetailResponse {
+  repeated DeviceDetailView data = 1;
+}
+
+
+message ListPaginationRequest {
+  optional string search = 1;
+  repeated uint64 namespaces = 2;
+  optional bool is_gateway = 3;
+  optional int64 skip = 4;
+  optional int64 limit = 5;
+  optional string order_by = 6;
+  optional OrderType order_type = 7;
+  uint64 user_id = 8;
+}
+
+enum OrderType {
+  ASC = 0;
+  DESC = 1;
+}
+
+message Device {
+  optional uint64 id = 1;
+  string key = 2;
+  string name = 3;
+  optional string description = 4;
+  optional bool is_gateway = 5;
+  optional bool is_create_device = 6;
+  uint64 namespace_id = 7;
+  uint64 user_id = 8;
+  DeviceCertificate certificate = 9;
+}
+
+message DeviceDetailView {
+  uint64 id = 1;
+  string key = 2;
+  string name = 3;
+  optional string description = 4;
+  bool is_gateway = 5;
+  bool is_create_device = 6;
+  DeviceCertificate certificate = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  uint64 namespace_id = 10;
+  uint64 owner_id = 11;
+}
+
+
+message DeviceCertificate {
+  optional uint64 id = 1;
+  TypeCertificate type = 2;
+  optional string username = 3;
+  optional string password = 4;
+  optional string token = 5;
+  optional string client_id = 6;
+  optional uint64 gateway_id = 7;
+}
+
+message ListPaginationResponse {
+  int64 total = 1;
+  int64 skip = 2;
+  int64 limit = 3;
+  repeated DeviceView data = 4;
+}
+
+message DeviceView {
+  uint64 id = 1;
+  string key = 2;
+  string name = 3;
+  optional string description = 4;
+  bool is_gateway = 5;
+  bool is_create_device = 6;
+  uint64 namespace_id = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  uint64 owner_id = 10;
+}

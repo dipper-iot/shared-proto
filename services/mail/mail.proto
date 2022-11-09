@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package mail;
+option go_package = "services/mail";
+import "google/protobuf/empty.proto";
+
+
+service MailService {
+  rpc Send(SendMailRequest) returns(google.protobuf.Empty);
+}
+
+
+message SendMailRequest {
+    optional string mail_name  = 1;
+    repeated string to = 2;
+    repeated string cc = 3;
+    repeated string bcc = 4;
+    string from = 5;
+    string subject = 6;
+    bytes body = 7;
+    repeated  string   attach_list = 8;
+}

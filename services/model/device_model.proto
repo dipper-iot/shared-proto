@@ -1,0 +1,124 @@
+syntax = "proto3";
+package model;
+
+option go_package = "services/model";
+
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "services/model/model.proto";
+
+
+service DeviceModelService {
+  rpc ListPagination(ListPaginationDeviceModelRequest) returns (ListPaginationDeviceModelResponse) {}
+
+  rpc CountModelByDeviceId(IdRequest) returns (IntResponse){}
+
+  rpc ListModelByDeviceId(IdRequest) returns (ListDeviceModelResponse){}
+
+  rpc GetById(IdRequest) returns (DeviceModelDetailView){}
+  rpc GetByIds(ListRequest) returns (ListDeviceModelResponse){}
+
+  rpc UpdateField(DeviceModelField) returns (google.protobuf.Empty) {}
+  rpc DeleteField(DeleteDeviceModelField) returns (google.protobuf.Empty) {}
+
+  rpc CreateAssignDevice(AssignRequest) returns (google.protobuf.Empty) {}
+//  rpc UpdatedAssignDevice(AssignRequest) returns (google.protobuf.Empty) {}
+  rpc DeleteAssignDevice(DeleteAssignRequest) returns (google.protobuf.Empty) {}
+}
+
+message DeleteDeviceModelField {
+  uint64 id = 1;
+  uint64 user_id = 6;
+  uint64 assign_id = 7;
+}
+
+
+message DeviceModelField {
+  optional uint64 id = 1;
+  string key = 2;
+  uint64 field_id = 3;
+  optional string description = 4;
+  uint64 user_id = 6;
+  uint64 assign_id = 7;
+}
+
+enum StatusAssign {
+  ACTIVE_ASSIGN = 0;
+  USER_INACTIVE = 1;
+  MODEL_INACTIVE = 2;
+  DELETE_ASSIGN = 3;
+}
+
+message AssignRequest {
+  uint64 device_id = 1;
+  uint64 model_id = 2;
+  uint64 user_id = 3;
+  optional StatusAssign status = 4;
+}
+
+message DeleteAssignRequest {
+  uint64 device_id = 1;
+  uint64 model_id = 2;
+  uint64 user_id = 3;
+}
+
+
+message IntResponse {
+  int64 data = 1;
+}
+
+message ListDeviceModelResponse {
+  repeated DeviceModelDetailView data = 1;
+}
+
+message ListPaginationDeviceModelRequest {
+  optional string search = 1;
+  repeated uint64 model_ids = 2;
+  optional int64 skip = 4;
+  optional int64 limit = 5;
+  optional string order_by = 6;
+  optional OrderType order_type = 7;
+  uint64 user_id = 8;
+}
+
+message DeviceField {
+  uint64 id = 1;
+  string key = 2;
+  uint64 field_id = 3;
+  optional string description = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+
+message DeviceModelDetailView {
+  uint64 assign_id = 1;
+  uint64 device_id = 2;
+  uint64 model_id = 3;
+  StatusAssign status = 4;
+  uint64 created_by = 5;
+  uint64 updated_by = 6;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  repeated DeviceField fields = 10;
+}
+
+message ListPaginationDeviceModelResponse {
+  int64 total = 1;
+  int64 skip = 2;
+  int64 limit = 3;
+  repeated AssignModelDeviceView data = 4;
+}
+
+message AssignModelDeviceView {
+  uint64 assign_id = 1;
+  uint64 device_id = 2;
+  uint64 model_id = 3;
+  StatusAssign status = 4;
+  uint64 created_by = 5;
+  uint64 updated_by = 6;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
